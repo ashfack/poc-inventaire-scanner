@@ -24,17 +24,20 @@ export const startScanner = (elementId, onDetected) => {
     }).catch(err => console.error("Erreur caméra:", err));
 };
 
-// MODE 2 : Scan depuis un fichier (Galerie)
+// MODE 2 : Scan depuis un fichier (Galerie) - VERSION CORRIGÉE
 export const scanFile = (elementId, file, onDetected) => {
     const scanner = getScanner(elementId);
 
-    scanner.scanFile(file, true)
+    // On désactive explicitement le redimensionnement (useBarCodeDetectorIfSupported)
+    // et on traite l'image à sa résolution d'origine
+    scanner.scanFile(file, false) // Le paramètre "false" évite l'affichage d'une image de preview qui peut ralentir le mobile
         .then(decodedText => {
             onDetected(decodedText);
         })
         .catch(err => {
-            alert("Impossible de lire le code sur cette photo. Essayez de la prendre de plus près.");
-            console.error(err);
+            // Si l'échec persiste, c'est souvent un problème de contraste
+            alert("Le code n'a pas été détecté. Assurez-vous que la photo est nette et bien éclairée.");
+            console.error("Détails scanFile:", err);
         });
 };
 
