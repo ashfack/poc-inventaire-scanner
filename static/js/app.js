@@ -72,7 +72,9 @@ document.getElementById('qr-input-file').onchange = (e) => {
                 ctx.drawImage(img, 0, 0, width, height);
 
                 canvas.toBlob((blob) => {
-                    executeScan(blob);
+                    // On transforme le Blob en File pour que la librairie l'accepte
+                    const optimizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                    executeScan(optimizedFile);
                 }, 'image/jpeg', 0.8);
             } else {
                 executeScan(file);
@@ -89,9 +91,12 @@ async function executeScan(source) {
         console.log("executeScan");
         await scanner.scanFile('interactive', source, (code) => {
             handleDetection(code);
+            console.log("End of scan");
             showLoading(false); // ARRÊT SI SUCCÈS
         });
     } catch (err) {
+    console.log("End of scan because of failure");
+    console.error(err);
         showLoading(false); // ARRÊT SI ÉCHEC
     }
 }
