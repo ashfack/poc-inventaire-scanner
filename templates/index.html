@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <h1>Bienvenue à l’application d’Ayisha et Ashfack (v2)</h1>
+        <h1>Bienvenue à l’application d’Ayisha et Ashfack (v3)</h1>
         <div class="stats-grid">
             <div class="stat-item">Total: <b id="stat-total">0</b></div>
             <div class="stat-item">À surveiller: <b id="stat-watch">0</b></div>
@@ -20,8 +20,12 @@
 
     <main>
         <section id="input-area">
-            <button id="btn-scan" class="btn-primary">📷 Scanner un produit</button>
-            <div id="interactive" class="viewport"></div>
+          <div class="scanner-actions">
+              <button id="btn-scan" class="btn-primary">📷 Scanner en Direct</button>
+              <button id="btn-browse" class="btn-secondary">📁 Choisir une Photo</button>
+          </div>
+          <input type="file" id="qr-input-file" accept="image/*" style="display:none">
+          <div id="interactive" class="viewport"></div>
 
             <form id="product-form" class="card">
                 <input type="text" id="p-name" placeholder="Nom du produit" required>

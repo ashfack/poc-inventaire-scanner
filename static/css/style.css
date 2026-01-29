@@ -17,4 +17,28 @@ header { text-align: center; margin-bottom: 20px; }
 .btn-primary { width: 100%; background: #3498db; color: white; border: none; padding: 12px; border-radius: 5px; }
 .btn-success { width: 100%; background: var(--green); color: white; border: none; padding: 12px; border-radius: 5px; margin-top: 10px; }
 
-#interactive video { width: 100%; border-radius: 8px; }
+
+.scanner-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-secondary {
+    background-color: #9b59b6; /* Violet */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#interactive {
+    width: 100%;
+    min-height: 200px;
+    background: #eee;
+    border-radius: 8px;
+    overflow: hidden;
+}

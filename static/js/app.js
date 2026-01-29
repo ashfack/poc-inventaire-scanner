@@ -16,26 +16,43 @@ inputs.forEach(id => {
 });
 
 // --- SCANNER ---
+// Bouton Scan Direct
 document.getElementById('btn-scan').onclick = () => {
-    scanner.startScanner('interactive', async (code) => {
-        // Remplir le champ code-barres
-        document.getElementById('p-barcode').value = code;
-
-        // Appel OpenFoodFacts automatique
-        try {
-            const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
-            const json = await res.json();
-            if (json.status === 1) {
-                document.getElementById('p-name').value = json.product.product_name;
-                // Petit retour visuel pour Ayisha & Ashfack
-                console.log("Produit trouvé : " + json.product.product_name);
-                alert("Produit trouvé : " + json.product.product_name);
-            }
-        } catch (e) {
-            console.error("Erreur OpenFoodFacts", e);
-        }
-    });
+    scanner.startScanner('interactive', handleDetection);
 };
+
+// Bouton Galerie (on déclenche le clic sur l'input caché)
+document.getElementById('btn-browse').onclick = () => {
+    document.getElementById('qr-input-file').click();
+};
+
+// Événement quand une photo est choisie
+document.getElementById('qr-input-file').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    scanner.scanFile('interactive', file, handleDetection);
+};
+
+// Fonction commune de traitement du code détecté
+async function handleDetection(code) {
+    document.getElementById('p-barcode').value = code;
+
+    // Feedback visuel (vibration si supporté)
+    if (navigator.vibrate) navigator.vibrate(100);
+
+    try {
+        const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+        const json = await res.json();
+        if (json.status === 1) {
+            console.log("1",json);
+            console.log("2",json.product);
+             console.log("3",json.product.product_name);
+            document.getElementById('p-name').value = json.product.product_name;
+        }
+    } catch (err) {
+        console.error("Erreur OpenFoodFacts:", err);
+    }
+}
 
 // --- RENDU & STATS ---
 window.updateView = () => {

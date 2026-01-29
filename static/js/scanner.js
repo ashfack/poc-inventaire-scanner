@@ -1,44 +1,47 @@
-// On initialise l'objet de scan globalement pour pouvoir l'arrêter proprement
 let html5QrCode = null;
 
-export const startScanner = (elementId, onDetected) => {
-    // Si un scanner tourne déjà, on l'arrête avant d'en lancer un nouveau
-    if (html5QrCode) {
-        html5QrCode.stop().catch(err => console.error("Erreur stop:", err));
+// Initialisation du scanner sur l'élément
+const getScanner = (elementId) => {
+    if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode(elementId);
     }
+    return html5QrCode;
+};
 
-    html5QrCode = new Html5Qrcode(elementId);
+// MODE 1 : Scan vidéo en direct
+export const startScanner = (elementId, onDetected) => {
+    const scanner = getScanner(elementId);
 
     const config = {
-        fps: 15, // Plus d'images par seconde pour plus de réactivité
-        qrbox: { width: 280, height: 150 }, // Zone de lecture adaptée aux codes-barres allongés
-        aspectRatio: 1.777778 // Format 16:9 pour mieux voir sur mobile
+        fps: 10,
+        qrbox: { width: 250, height: 150 },
+        aspectRatio: 1.77
     };
 
-    html5QrCode.start(
-        { facingMode: "environment" }, // Utilise la caméra arrière
-        config,
-        (decodedText) => {
-            // En cas de succès
-            console.log("Code détecté :", decodedText);
+    scanner.start({ facingMode: "environment" }, config, (text) => {
+        onDetected(text);
+        stopScanner();
+    }).catch(err => console.error("Erreur caméra:", err));
+};
+
+// MODE 2 : Scan depuis un fichier (Galerie)
+export const scanFile = (elementId, file, onDetected) => {
+    const scanner = getScanner(elementId);
+
+    scanner.scanFile(file, true)
+        .then(decodedText => {
             onDetected(decodedText);
-            stopScanner(); // Arrête la caméra après détection
-        },
-        (errorMessage) => {
-            // On ne log pas les erreurs de lecture (trop fréquentes tant que le focus n'est pas fait)
-        }
-    ).catch(err => {
-        alert("Impossible d'accéder à la caméra. Vérifiez les permissions HTTPS.");
-        console.error(err);
-    });
+        })
+        .catch(err => {
+            alert("Impossible de lire le code sur cette photo. Essayez de la prendre de plus près.");
+            console.error(err);
+        });
 };
 
 export const stopScanner = () => {
-    if (html5QrCode) {
+    if (html5QrCode && html5QrCode.isScanning) {
         html5QrCode.stop().then(() => {
-            console.log("Scanner arrêté.");
-            // Optionnel : masquer le conteneur vidéo pour gagner de la place
             document.getElementById('interactive').innerHTML = "";
-        }).catch(err => console.error("Erreur lors de l'arrêt:", err));
+        });
     }
 };
