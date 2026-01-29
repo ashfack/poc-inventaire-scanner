@@ -1,5 +1,5 @@
 import * as db from './storage.js';
-
+import * as scanner from './scanner.js';
 let currentTab = 'stock';
 
 // --- VALIDATION ---
@@ -17,21 +17,25 @@ inputs.forEach(id => {
 
 // --- SCANNER ---
 document.getElementById('btn-scan').onclick = () => {
-    Quagga.init({
-        inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#interactive'), constraints: { facingMode: "environment" } },
-        decoder: { readers: ["ean_reader", "ean_8_reader"] }
-    }, (err) => { if(!err) Quagga.start(); });
-};
+    scanner.startScanner('interactive', async (code) => {
+        // Remplir le champ code-barres
+        document.getElementById('p-barcode').value = code;
 
-Quagga.onDetected(async (data) => {
-    console.log("onDetected ", data);
-    const code = data.codeResult.code;
-    document.getElementById('p-barcode').value = code;
-    Quagga.stop();
-    const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
-    const json = await res.json();
-    if(json.status === 1) document.getElementById('p-name').value = json.product.product_name;
-});
+        // Appel OpenFoodFacts automatique
+        try {
+            const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+            const json = await res.json();
+            if (json.status === 1) {
+                document.getElementById('p-name').value = json.product.product_name;
+                // Petit retour visuel pour Ayisha & Ashfack
+                console.log("Produit trouvé : " + json.product.product_name);
+                alert("Produit trouvé : " + json.product.product_name);
+            }
+        } catch (e) {
+            console.error("Erreur OpenFoodFacts", e);
+        }
+    });
+};
 
 // --- RENDU & STATS ---
 window.updateView = () => {
