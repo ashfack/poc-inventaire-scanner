@@ -27,11 +27,74 @@ document.getElementById('btn-browse').onclick = () => {
 };
 
 // Événement quand une photo est choisie
+const showLoading = (show) => {
+    const container = document.getElementById('interactive');
+    const existing = document.querySelector('.scanner-overlay');
+
+    if (show && !existing) {
+        const overlay = document.createElement('div');
+        overlay.className = 'scanner-overlay';
+        overlay.innerHTML = '<div class="spinner"></div><p>Analyse de l\'image...</p>';
+        container.appendChild(overlay);
+    } else if (!show && existing) {
+        existing.remove();
+    }
+};
+
+// Modifie l'événement onchange pour inclure l'indicateur
 document.getElementById('qr-input-file').onchange = (e) => {
+    console.log("qr-input-file onChange");
     const file = e.target.files[0];
     if (!file) return;
-    scanner.scanFile('interactive', file, handleDetection);
+
+    showLoading(true); // ON LANCE L'ANIMATION
+    console.log("qr-input-file onChange should show Loading");
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+            const maxSide = 1500;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxSide || height > maxSide) {
+                const canvas = document.createElement('canvas');
+                if (width > height) {
+                    height *= maxSide / width;
+                    width = maxSide;
+                } else {
+                    width *= maxSide / height;
+                    height = maxSide;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    executeScan(blob);
+                }, 'image/jpeg', 0.8);
+            } else {
+                executeScan(file);
+            }
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
 };
+
+// Fonction de scan isolée pour mieux gérer le "showLoading"
+async function executeScan(source) {
+    try {
+        console.log("executeScan");
+        await scanner.scanFile('interactive', source, (code) => {
+            handleDetection(code);
+            showLoading(false); // ARRÊT SI SUCCÈS
+        });
+    } catch (err) {
+        showLoading(false); // ARRÊT SI ÉCHEC
+    }
+}
 
 // Fonction commune de traitement du code détecté
 async function handleDetection(code) {
