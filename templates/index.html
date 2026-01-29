@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaire Scanner</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Bienvenue à l’application d’Ayisha et Ashfack</h1>
+        <div class="stats-grid">
+            <div class="stat-item">Total: <b id="stat-total">0</b></div>
+            <div class="stat-item">À surveiller: <b id="stat-watch">0</b></div>
+            <div class="stat-item">Expirés: <b id="stat-expired">0</b></div>
+        </div>
+    </header>
+
+    <main>
+        <section id="input-area">
+            <button id="btn-scan" class="btn-primary">📷 Scanner un produit</button>
+            <div id="interactive" class="viewport"></div>
+
+            <form id="product-form" class="card">
+                <input type="text" id="p-name" placeholder="Nom du produit" required>
+                <input type="text" id="p-barcode" placeholder="Code-barres (8, 12, 13, 14 chiffres)">
+                <input type="date" id="p-expiry" required>
+                <button type="submit" class="btn-success">Enregistrer le produit</button>
+            </form>
+        </section>
+
+        <nav class="tabs">
+            <button class="tab-link active" onclick="switchTab('stock')">Inventaire</button>
+            <button class="tab-link" onclick="switchTab('wasted')">Gaspillés</button>
+            <button class="tab-link" onclick="switchTab('archived')">Archivés</button>
+        </nav>
+
+        <div id="list-container" class="grid"></div>
+
+        <div class="admin-actions">
+            <button onclick="exportData()">📤 Exporter JSON</button>
+            <input type="file" id="import-file" hidden onchange="importAndMerge(event)">
+            <button onclick="document.getElementById('import-file').click()">📥 Importer & Fusionner</button>
+        </div>
+    </main>
+
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

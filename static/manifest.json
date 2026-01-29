@@ -1,0 +1,9 @@
+{
+  "name": "Inventaire Scanner",
+  "short_name": "InvScanner",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#2ecc71",
+  "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/3081/3081840.png", "sizes": "512x512", "type": "image/png" }]
+}
