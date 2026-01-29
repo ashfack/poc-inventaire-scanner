@@ -51,7 +51,7 @@ export const scanFile = (elementId, file, onDetected) => {
         .catch(err => {
             console.warn("Échec lecture fichier:", err);
             // Si ça échoue, on tente une seconde fois avec un moteur de secours si dispo
-            alert("Le code-barres n'est pas lisible. Essayez de dézoomer un peu ou d'améliorer l'éclairage.");
+            alert("Le code-barres n'est pas lisible encore. Essayez de dézoomer un peu ou d'améliorer l'éclairage.");
         });
 };
 

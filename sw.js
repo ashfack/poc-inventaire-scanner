@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inv-app-v8';
+const CACHE_NAME = 'inv-app-v9';
 const ASSETS = [
     '/',
     '/static/css/style.css',
